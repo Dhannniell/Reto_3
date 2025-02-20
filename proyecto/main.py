@@ -44,4 +44,4 @@ def mostrar_historial():
     historial_ventas = tk.Toplevel(ventana)
     historial_ventas.title("Historial de Ventas.")
     
-    treeview_historial = ttk.Treeview(historial_ventas, columns=("Producto", "Cantidad", "Precio Total", show= "heading"))
+    treeview_historial = ttk.Treeview(historial_ventas, columns=("Producto", "Cantidad", "Precio Total"), show= "heading", height=10)
