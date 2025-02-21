@@ -6,6 +6,30 @@ from productos import productos, historial_ventas
 
 #Lista de productos seleccionados 
 productos_seleccionados = []
+
+def agregar_desde_lista():
+    try:
+        selected_item = treeview_productos.selection()
+        if not selected_item:
+            raise ValueError("Debe seleccionar un producto de la lista")
+        
+        id_producto = selected_item[0]
+        
+        if not id_producto.isdigit() or int(id_producto) not in producto:
+            raise ValueError("ID de producto no es valido.")
+        
+        cantidad = int(entry_cantidad.get())
+        
+        producto = productos[int(id_producto)]
+        cantidad_diponible = 100
+        if cantidad > cantidad_diponible:
+            raise ValueError("No hay suficiente cantidad disponible")
+        
+        agregar_producto(int(id_producto), cantidad, productos_seleccionados)
+        
+        
+    except
+
 def actualizar_lista():
     for row in treeview_seleccionados.get_children():
         treeview_seleccionados.delete(row)
@@ -45,3 +69,22 @@ def mostrar_historial():
     historial_ventas.title("Historial de Ventas.")
     
     treeview_historial = ttk.Treeview(historial_ventas, columns=("Producto", "Cantidad", "Precio Total"), show= "heading", height=10)
+    treeview_historial.heading("Proyecto", text="Producto")
+    treeview_historial.heading("Cantidad", text="Cantidad")
+    treeview_historial.heading("Precio Total", text="Precio Total")
+    treeview_historial.heading("Producto", width=200)
+    treeview_historial.heading("Cantidad", width=100)
+    treeview_historial.heading("Precio Total", width=150)
+    
+    #Insertar las ventas al Treeview
+    for venta in historial_ventas:
+        treeview_historial.insert("", "end", values=(venta["producto"], venta["cantidad"], f"${venta["precio_total"]:.2f}"))
+        
+    treeview_historial.pack(padx=20, pady=20)
+    
+    #Mostrar las ganancias totales
+    ganancias_totales = sum(venta["precio_total"] for venta in historial_ventas)
+    etiqueta_ganacias = tk.Label(historial_ventas, text=f"Ganacias Totales: ${ganancias_totales:.2f}", font=("Arial", 14, "bold"))
+    etiqueta_ganacias.pack(pady=10)
+    
+    
