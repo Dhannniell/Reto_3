@@ -35,7 +35,7 @@ def calcular_total(lista_productos):
     total = 0
     for producto in lista_productos:
         total += producto['precio']
-        return total 
+    return total 
 
 def agregar_producto(id_producto, cantidad, lista_productos):
     """ Agregar un producto a la lista de compra y registrar la venta"""
