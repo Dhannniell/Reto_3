@@ -20,4 +20,13 @@ def finalizar_compra():
     recibo_texto = "RECIBO DE COMPRA\n\n"
     recibo_texto = "-"*30 + "\n"
     for producto in productos_seleccionados:
-        
+        recibo_texto += f"{producto['nombre']} - ${producto['precio']:.2f}\n"
+    
+    # Agregar al historial de ventas
+    for producto in productos_seleccionados:
+        historial_ventas.append({
+            "producto":producto['nombre'],
+            "cantidad":1,
+            "precio_total":producto['precio']
+        }) 
+    recibo_texto+= ""
