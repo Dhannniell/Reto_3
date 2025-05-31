@@ -29,4 +29,21 @@ def finalizar_compra():
             "cantidad":1,
             "precio_total":producto['precio']
         }) 
-    recibo_texto+= ""
+        
+    recibo_texto += "-"* 30 + "\n"
+    recibo_texto += f"Total: ${total:.2f}"
+    recibo_texto += "-"* 30
+    messagebox.showinfo("Recibo de Compra", recibo_texto)
+    
+    # Limpiar lista de productos seleccionados 
+    productos_seleccionados.clear()
+    actualizar_lista()
+    
+def mostrar_historial():
+    historial_ventas = tk.Toplevel(ventana)
+    historial_ventas.title("Historial de Ventas")
+    
+    treeview_historial = ttk.Treeview(historial_ventas, columns=("Producto", "Cantidad", "Precio Total"), show="headings", height=10)
+    treeview_historial.heading("Producto", text="Producto")
+    treeview_historial.heading("Cantidad", text="Cantidad")
+    treeview_historial.heading("Precio Total", text="Precio Total") 
