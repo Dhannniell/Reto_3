@@ -46,4 +46,18 @@ def mostrar_historial():
     treeview_historial = ttk.Treeview(historial_ventas, columns=("Producto", "Cantidad", "Precio Total"), show="headings", height=10)
     treeview_historial.heading("Producto", text="Producto")
     treeview_historial.heading("Cantidad", text="Cantidad")
-    treeview_historial.heading("Precio Total", text="Precio Total") 
+    treeview_historial.heading("Precio Total", text="Precio Total")
+    treeview_historial.heading("Producto", width=200)
+    treeview_historial.heading("Cantidad", width=100)
+    treeview_historial.heading("Precio Total", width=150)
+    
+    # Insertar las ventas al Treeview
+    for venta in historial_ventas:
+        treeview_historial.insert("", "end", values=(venta["producto"], venta["cantidad"], f"${venta["precio_total"]:.2f}"))
+    
+    treeview_historial.pack(padx=20, pady=20)
+    
+    # Mostrar las ganancias totales
+    ganancias_totales = sum(venta["precio_total"] for venta in historial_ventas)
+    etiqueta_ganancias = tk.Label(historial_ventas, text=f"Ganancias Totales: ${ganancias_totales:2f}", font=("Arial", 14, "bold"))
+    etiqueta_ganancias.pack(pady=10)
