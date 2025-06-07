@@ -4,57 +4,46 @@ from operaciones import agregar_producto, calcular_total
 from excepciones import manejar_error
 from productos import productos, historial_ventas
 
-# Lista de productos seleccionados
+# Lista de productos seleccionados 
 productos_seleccionados = []
 
-# Función para agregar productos desde el Treeview
 def agregar_desde_lista():
     try:
-        # Obtener el item seleccionado en el Treeview
         selected_item = treeview_productos.selection()
         if not selected_item:
-            raise ValueError("Debe seleccionar un producto de la lista.")
+            raise ValueError("Debe seleccionar un producto de la lista")
         
-        # El ID del producto generalmente se obtiene del iid del Treeview
-        id_producto = selected_item[0]  # 'iid' del Treeview, que debe ser el ID del producto en el diccionario
+        id_producto = selected_item[0]
         
-        # Aquí asumimos que el id_producto es la clave que corresponde al producto en el diccionario 'productos'
         if not id_producto.isdigit() or int(id_producto) not in productos:
-            raise ValueError("ID de producto no válido.")
+            raise ValueError("ID producto no es valido.")
         
-        # Obtener la cantidad del campo de entrada
         cantidad = int(entry_cantidad.get())
         
-        # Validar que haya suficiente cantidad disponible
         producto = productos[int(id_producto)]
-        cantidad_disponible = 100  # Asumimos que este valor se obtiene correctamente
+        cantidad_disponible = 100
         if cantidad > cantidad_disponible:
-            raise ValueError("No hay suficiente cantidad disponible.")
-
-        # Agregar el producto
+            raise ValueError("No hay suficiente cantidad disponible")
+        
         agregar_producto(int(id_producto), cantidad, productos_seleccionados)
         
-        # Actualizar cantidad disponible en el Treeview
         cantidad_disponible -= cantidad
         treeview_productos.item(selected_item, values=(producto['nombre'], f"${producto['precio']:.2f}", cantidad_disponible))
         
         actualizar_lista()
-
+        
     except ValueError as e:
         manejar_error(e)
         messagebox.showerror("Error", str(e))
-
-
-# Función para mostrar los productos en la interfaz
+        
 def actualizar_lista():
-    for row in treeview_seleccionados.get_children():
+    for row in  treeview_seleccionados.get_children():
         treeview_seleccionados.delete(row)
     for producto in productos_seleccionados:
-        treeview_seleccionados.insert("", "end", values=(producto['nombre'], f"${producto['precio']:.2f}"))
+        treeview_seleccionados.insert("","end", values=(producto['nombre'], f"${producto['precio']:.2f}"))
     total = calcular_total(productos_seleccionados)
     etiqueta_total.config(text=f"Total: ${total:.2f}")
-
-# Función para finalizar la compra y mostrar el recibo
+    
 def finalizar_compra():
     total = calcular_total(productos_seleccionados)
     recibo_texto = "RECIBO DE COMPRA\n\n"
@@ -65,58 +54,57 @@ def finalizar_compra():
     # Agregar al historial de ventas
     for producto in productos_seleccionados:
         historial_ventas.append({
-            "producto": producto['nombre'],
-            "cantidad": 1,  # Aquí puedes manejar la cantidad que realmente se vendió
-            "precio_total": producto['precio']
-        })
-
-    recibo_texto += "-"*30 + "\n"
-    recibo_texto += f"Total: ${total:.2f}\n"
-    recibo_texto += "-"*30
+            "producto":producto['nombre'],
+            "cantidad":1,
+            "precio_total":producto['precio']
+        }) 
+        
+    recibo_texto += "-"* 30 + "\n"
+    recibo_texto += f"Total:${total:.2f}"
+    recibo_texto += "-"* 30
     messagebox.showinfo("Recibo de Compra", recibo_texto)
     
-    # Limpiar lista de productos seleccionados
+    # Limpiar lista de productos seleccionados 
     productos_seleccionados.clear()
     actualizar_lista()
-
-# Función para mostrar el historial de ventas
+    
 def mostrar_historial():
-    historial_ventana = tk.Toplevel(ventana)
-    historial_ventana.title("Historial de Ventas")
-
-    # Crear Treeview para el historial de ventas
-    treeview_historial = ttk.Treeview(historial_ventana, columns=("Producto", "Cantidad", "Precio Total"), show="headings", height=10)
-    treeview_historial.heading("Producto", text="Producto")
-    treeview_historial.heading("Cantidad", text="Cantidad")
-    treeview_historial.heading("Precio Total", text="Precio Total")
+    historial_ventas = tk.Toplevel(ventana)
+    historial_ventas.title("Historial de Ventas")
+    
+    treeview_historial = ttk.Treeview(historial_ventas, columns=("Producto", "Cantidad", "Precio Total"), show="headings", height=10)
+    treeview_historial.column("Producto", text="Producto")
+    treeview_historial.column("Cantidad", text="Cantidad")
+    treeview_historial.column("Precio Total", text="Precio Total")
     treeview_historial.column("Producto", width=200)
     treeview_historial.column("Cantidad", width=100)
     treeview_historial.column("Precio Total", width=150)
-
+    
     # Insertar las ventas al Treeview
     for venta in historial_ventas:
         treeview_historial.insert("", "end", values=(venta["producto"], venta["cantidad"], f"${venta['precio_total']:.2f}"))
-
+    
     treeview_historial.pack(padx=20, pady=20)
-
+    
     # Mostrar las ganancias totales
     ganancias_totales = sum(venta["precio_total"] for venta in historial_ventas)
-    etiqueta_ganancias = tk.Label(historial_ventana, text=f"Ganancias Totales: ${ganancias_totales:.2f}", font=("Arial", 14, "bold"))
+    etiqueta_ganancias = tk.Label(historial_ventas, text=f"Ganancias Totales: ${ganancias_totales:.2f}", font=("Arial", 14, "bold"))
     etiqueta_ganancias.pack(pady=10)
-
-# Configuración de la interfaz
+    
+# Configuracion de la interfaz 
 ventana = tk.Tk()
-ventana.title("Caja Registradora - Tienda Fruber")
+ventana.title("Caja Registradora - Tienda Fruver")
 
 # Marco principal
-marco_principal = tk.Frame(ventana, padx=30, pady=30, bg="#f4f4f9")
+
+marco_principal =tk.Frame(ventana, padx=30, pady=30, bg="#f4f4f9")
 marco_principal.pack(fill="both", expand=True)
 
-# Título
-titulo = tk.Label(marco_principal, text="Bienvenido a la Tienda Fruber", font=("Arial", 20, "bold"), fg="green", bg="#f4f4f9")
+# Titulo 
+titulo = tk.Label(marco_principal, text="Bienvenido a la Tienda Fruver", font=("Arial", 20, "bold"), fg="green", bg="#f4f4f9")
 titulo.grid(row=0, column=0, columnspan=3, pady=20)
 
-# Frame para la lista de productos
+# Frame para la lista de productos 
 frame_productos = tk.Frame(marco_principal, bg="#f4f4f9")
 frame_productos.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
