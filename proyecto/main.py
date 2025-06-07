@@ -2,7 +2,10 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from operaciones import agregar_producto, calcular_total
 from excepciones import manejar_error
-from productos import productos, historial_ventas
+from productos import productos
+from productos import historial_ventas
+from productos import historial_compras
+from datetime import datetime
 
 # Lista de productos seleccionados 
 productos_seleccionados = []
@@ -46,14 +49,24 @@ def actualizar_lista():
     
 def finalizar_compra():
     total = calcular_total(productos_seleccionados)
-    recibo_texto = "RECIBO DE COMPRA\n\n"
-    recibo_texto += "-"*30 + "\n"
-    for producto in productos_seleccionados:
-        recibo_texto += f"{producto['nombre']} - ${producto['precio']:.2f}\n"
+    
+    nueva_venta = {
+        'fecha': datetime.now().strftime("%d/%m/%Y %H:%M"),  # 🔹 Fecha legible
+        'productos': productos_seleccionados.copy(),  # 🔹 Copia de los productos
+        'total': total
+    }
+    
+    historial_compras['ventas'].append(nueva_venta)
+    historial_compras['total_ganancias'] += total
+    historial_compras['ultima_venta'] = nueva_venta  # Opcional
+    
+    # Limpiar lista de productos seleccionados
+    productos_seleccionados.clear()
+    actualizar_lista()
     
     # Agregar al historial de ventas
     for producto in productos_seleccionados:
-        historial_ventas.append({
+        historial_compras.append({
             "producto":producto['nombre'],
             "cantidad":1,
             "precio_total":producto['precio']
@@ -69,26 +82,41 @@ def finalizar_compra():
     actualizar_lista()
     
 def mostrar_historial():
-    historial_ventas = tk.Toplevel(ventana)
-    historial_ventas.title("Historial de Ventas")
+    ventana_historial = tk.Toplevel(ventana)
+    ventana_historial.title("Historial de Ventas")
     
-    treeview_historial = ttk.Treeview(historial_ventas, columns=("Producto", "Cantidad", "Precio Total"), show="headings", height=10)
-    treeview_historial.column("Producto", text="Producto")
-    treeview_historial.column("Cantidad", text="Cantidad")
-    treeview_historial.column("Precio Total", text="Precio Total")
-    treeview_historial.column("Producto", width=200)
-    treeview_historial.column("Cantidad", width=100)
-    treeview_historial.column("Precio Total", width=150)
+    # 🔹 Configurar tabla
+    tree = ttk.Treeview(ventana_historial, columns=("Fecha", "Productos", "Total"), show="headings")
+    tree.heading("Fecha", text="Fecha")
+    tree.column("Fecha", width=150)
+    tree.heading("Productos", text="Productos")
+    tree.column("Productos", width=250)
+    tree.heading("Total", text="Total ($)")
+    tree.column("Total", width=100)
     
-    # Insertar las ventas al Treeview
-    for venta in historial_ventas:
-        treeview_historial.insert("", "end", values=(venta["producto"], venta["cantidad"], f"${venta['precio_total']:.2f}"))
+    # 🔹 Insertar datos del historial
+    for venta in historial_compras['ventas']:
+        # Convertir lista de productos a texto (ej: "Manzana, Pan, Leche")
+        nombres_productos = ", ".join([p['nombre'] for p in venta['productos']])
+        tree.insert("", "end", values=(
+            venta['fecha'],
+            nombres_productos,
+            f"${venta['total']:.2f}"
+        ))
     
-    treeview_historial.pack(padx=20, pady=20)
+    # 🔹 Mostrar ganancias totales
+    lbl_total = tk.Label(
+        ventana_historial,
+        text=f"Ganancias Totales: ${historial_compras['total_ganancias']:.2f}",
+        font=("Arial", 12, "bold")
+    )
+    
+    tree.pack(padx=10, pady=10)
+    lbl_total.pack(pady=10)
     
     # Mostrar las ganancias totales
-    ganancias_totales = sum(venta["precio_total"] for venta in historial_ventas)
-    etiqueta_ganancias = tk.Label(historial_ventas, text=f"Ganancias Totales: ${ganancias_totales:.2f}", font=("Arial", 14, "bold"))
+    ganancias_totales = sum(venta["precio_total"] for venta in ventana_historial)
+    etiqueta_ganancias = tk.Label(ventana_historial, text=f"Ganancias Totales: ${ganancias_totales:.2f}", font=("Arial", 14, "bold"))
     etiqueta_ganancias.pack(pady=10)
     
 # Configuracion de la interfaz 

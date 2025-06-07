@@ -25,6 +25,7 @@ productos = {
 
 # Historial de ventas
 historial_ventas = []
+historial_compras= []
 
 def obtener_producto(id_producto):
     """ Retorna los datos del producto de acuerdo a su ID """
