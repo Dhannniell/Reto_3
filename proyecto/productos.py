@@ -26,20 +26,13 @@ productos = {
 # Historial de ventas
 historial_ventas = []
 
-def obtener_producto(id_producto):
+def obtener_productos(id_producto):
     """ Retorna los datos del producto de acuerdo a su ID """
     return productos.get(id_producto, None)
 
-def calcular_total(lista_productos):
-    """ Calcular el total de la compra."""
-    total = 0
-    for producto in lista_productos:
-        total += producto['precio']
-    return total
-
-def agregar_producto(id_producto, cantidad, lista_productos):
+def agregar_producto_historial_ventas(id_producto, cantidad, lista_productos):
     """ Agregar un producto a la lista de compra y registrar la venta """
-    producto = obtener_producto(id_producto)
+    producto = obtener_productos(id_producto)
     if producto:
         lista_productos.append({"nombre": producto ["nombre"], "precio": producto ["precio"] * cantidad})
         
@@ -51,3 +44,10 @@ def agregar_producto(id_producto, cantidad, lista_productos):
         })
     else:
         raise ValueError(f"Producto con ID {id_producto} no encontrado")
+    
+def calcular_total(lista_productos):
+    """ Calcular el total de la compra."""
+    total = 0
+    for producto in lista_productos:
+        total += producto['precio']
+    return total
