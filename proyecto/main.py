@@ -189,8 +189,4 @@ boton_finalizar.pack(pady=20)
 boton_historial = tk.Button(frame_botones, text="Ver Historial de Ventas", command=mostrar_historial, bg="#ff9800", font=("Arial", 14))
 boton_historial.pack(pady=20)
 
-
-
-
-
 ventana.mainloop()
